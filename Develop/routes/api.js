@@ -1,15 +1,35 @@
-const path = require('path');
+const router = require("express").Router();
+const Workoutsaction = require("../public/workout.js");
 
-module.exports = (app) => {
-    app.get('/', (req, res) => 
-    res.sendFile(path.join(__dirname, '../public/index.html'))
-    );
+router.post("/api/workout", ({ body }, res) => {
+  Workout.create(body)
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
+});
 
-    app.get('/exercise', (req, res) => 
-    res.sendFile(path.join(__dirname, '../public/exercise.html'))
-    );
+router.post("/api/workout/bulk", ({ body }, res) => {
+  Workout.insertMany(body)
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
+});
 
-    app.get('/stats', (req, res) => 
-    res.sendFile(path.join(__dirname, '../public/stats.html'))
-    );
-}
+router.get("/api/workout", (req, res) => {
+  Workout.find({})
+    .sort({ date: -1 })
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
+});
+
+module.exports = router;
